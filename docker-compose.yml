@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    command: npm run serve
+    ports:
+        - ${PORT}:8080
+    volumes:
+        - /usr/app/web/node_modules
+        - ./src:/usr/app/web/src
+    environment:
+    -    API_HOST=${API_HOST}
