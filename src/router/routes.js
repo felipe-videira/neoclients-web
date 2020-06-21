@@ -1,11 +1,11 @@
-import Home from '../views/Home.vue';
-import ClientForm from '../views/ClientForm.vue';
+import ClientList from '@/views/ClientList.vue';
+import ClientForm from '@/views/ClientForm.vue';
 
 export default [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
+    name: 'ClientList',
+    component: ClientList,
   },
   {
     path: '/novo-cliente',
@@ -13,7 +13,7 @@ export default [
     component: ClientForm,
   },
   {
-    path: '/client/:id',
+    path: '/cliente/:id',
     name: 'EditClient',
     component: ClientForm,
   },
