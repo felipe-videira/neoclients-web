@@ -7,6 +7,7 @@
       :loading="loading"
       :loading-text="loadingText"
       :no-data-text="noDataText"
+      hide-default-footer
     >
       <template v-slot:top>
         <v-toolbar
@@ -77,8 +78,6 @@ export default {
     noDataText: 'Você não possui clientes.',
     loadingText: 'Carregando...',
     items: [],
-    page: 1,
-    limit: 10,
   }),
 
   created() {
@@ -96,10 +95,7 @@ export default {
     async getItems() {
       try {
         this.loading = true;
-        this.items = await request('/client', 'GET', {
-          limit: this.limit,
-          page: this.page,
-        });
+        this.items = await request('/client', 'GET');
       } catch (err) {
         this.showError();
       } finally {

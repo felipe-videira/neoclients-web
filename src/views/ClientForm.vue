@@ -28,6 +28,7 @@
         </v-col>
         <v-col cols="12" md="6">
           <v-text-field
+            v-mask="'###.###.###-##'"
             v-model="values.cpf"
             :rules="rules.cpf"
             :label="labels.cpf"
@@ -48,6 +49,7 @@
         </v-col>
         <v-col cols="12" md="6">
           <v-text-field
+            v-mask="'(##) #####-####'"
             v-model="values.cellphone"
             :rules="rules.cellphone"
             :label="labels.cellphone"
@@ -58,6 +60,7 @@
         </v-col>
         <v-col cols="12" md="6">
           <v-text-field
+            v-mask="'(##) ####-####'"
             v-model="values.telephone"
             :rules="rules.telephone"
             :label="labels.telephone"
@@ -107,6 +110,7 @@
 import {
   validateCpf,
   validateEmail,
+  stripNonNumeric,
 } from '@/utils';
 import eventBus from '@/services/eventBus';
 import request from '@/services/request';
@@ -142,13 +146,15 @@ export default {
       ],
       cpf: [
         (v) => !!v || 'O CPF do cliente é obrigatório',
-        (v) => validateCpf(v) || 'CPF inválido',
+        (v) => validateCpf(stripNonNumeric(v)) || 'CPF inválido',
       ],
       cellphone: [
         (v) => !!v || 'O celular do cliente é obrigatório',
-        (v) => (!!v && v.length === 11) || 'Celular inválido',
+        (v) => (!!v && stripNonNumeric(v).length === 11) || 'Celular inválido',
       ],
-      telephone: [(v) => !v || v.length === 10 || 'Telefone inválido'],
+      telephone: [
+        (v) => !v || stripNonNumeric(v).length === 10 || 'Telefone inválido',
+      ],
     },
   }),
 
@@ -202,10 +208,17 @@ export default {
 
         const { id } = this.$route.params;
 
+        const body = {
+          ...this.values,
+          cpf: stripNonNumeric(this.values.cpf),
+          cellphone: stripNonNumeric(this.values.cellphone),
+          telephone: stripNonNumeric(this.values.telephone),
+        };
+
         const { message } = await request(
           `/client/${id || ''}`,
           id ? 'PATCH' : 'POST',
-          this.values,
+          body,
         );
 
         this.showSuccess(message);

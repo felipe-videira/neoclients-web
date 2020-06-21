@@ -23,3 +23,5 @@ export const validateCpf = (v) => {
 
 export const validateEmail = (v) => /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   .test(v);
+
+export const stripNonNumeric = (v) => ((v && typeof v === 'string') ? v.replace(/\D/g, '') : v);
