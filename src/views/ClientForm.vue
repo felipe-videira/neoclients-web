@@ -227,18 +227,16 @@ export default {
     },
 
     showError() {
-      eventBus.$emit('show-alert', {
-        message: 'Ocorreu um erro, por favor tente novamente mais tarde.',
+      eventBus.$emit('show-snack', {
+        text: 'Ocorreu um erro, por favor tente novamente mais tarde.',
         color: 'red',
-        icon: 'mdi-error',
       });
     },
 
-    showSuccess(message) {
-      eventBus.$emit('show-alert', {
-        message,
+    showSuccess(text) {
+      eventBus.$emit('show-snack', {
+        text,
         color: 'green',
-        icon: 'mdi-check',
       });
     },
   },

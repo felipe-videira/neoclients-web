@@ -3,7 +3,7 @@ import axios from 'axios';
 export default async (
   path,
   method = 'GET',
-  data = null,
+  dataOrParams = null,
   options = {},
   baseUrl = process.env.VUE_APP_API_HOST,
 ) => {
@@ -11,7 +11,8 @@ export default async (
     const { data: res } = await axios({
       method,
       url: baseUrl + path,
-      data,
+      data: method.toUpperCase() !== 'GET' && dataOrParams,
+      params: dataOrParams,
       headers: {
         'Content-Type': 'application/json',
       },

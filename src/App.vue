@@ -38,18 +38,23 @@
           <router-view></router-view>
         </transition>
 
-        <v-alert
-          v-model="alert"
-          :color="alertColor"
-          :icon="alertIcon"
-          border="top"
-          transition="scale-transition"
-          dark
-          dismissible
+        <v-snackbar
+          v-model="snackbar"
+          :color="snackColor"
+          content-class="font-weight-medium"
         >
-          {{alertMessage}}
-        </v-alert>
-
+          {{ snackText }}
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              icon
+              dark
+              v-bind="attrs"
+              @click="snackbar = false"
+            >
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </template>
+        </v-snackbar>
       </v-container>
     </v-main>
 
@@ -67,20 +72,19 @@ export default {
 
   data: () => ({
     drawer: true,
-    alert: false,
-    alertMessage: '',
-    alertColor: 'blue',
-    alertIcon: 'mdi-info',
+    snackbar: false,
+    snackText: '',
+    snackColor: 'blue',
   }),
 
   created() {
-    eventBus.$on('show-alert', this.showAlert);
+    eventBus.$on('show-snack', this.showSnack);
 
     this.setDrawer();
   },
 
   destroyed() {
-    eventBus.$off('show-alert', this.showAlert);
+    eventBus.$off('show-snack', this.showSnack);
   },
 
   methods: {
@@ -90,12 +94,12 @@ export default {
       this.drawer = !xs && !sm;
     },
 
-    showAlert(params) {
-      if (!params.message) return;
-      this.alert = true;
-      this.alertMessage = params.message;
-      if (params.color) this.alertColor = params.color;
-      if (params.icon) this.alertIcon = params.icon;
+    showSnack({ text, color }) {
+      if (!text) return;
+
+      this.snackbar = true;
+      this.snackText = text;
+      if (color) this.snackColor = color;
     },
   },
 

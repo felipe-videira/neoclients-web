@@ -1,33 +1,56 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="items"
-    :loading="loading"
-    class="elevation-1 mt-15"
-    :no-data-text="noDataText"
-  >
-   <template v-slot:top>
-      <v-toolbar flat color="white">
-        <v-spacer></v-spacer>
-        <v-btn
-          @click="createItem"
-          color="primary"
-          class="mb-2"
-          dark
+  <span>
+    <v-data-table
+      class="elevation-1 mt-15"
+      :headers="headers"
+      :items="items"
+      :loading="loading"
+      :loading-text="loadingText"
+      :no-data-text="noDataText"
+    >
+      <template v-slot:top>
+        <v-toolbar
+          flat
+          color="white"
+          class="mb-5 pt-5"
         >
-          Novo Cliente
-        </v-btn>
-      </v-toolbar>
-    </template>
-    <template v-slot:item.actions="{ item }">
-      <v-icon
-        class="mr-2"
-        @click="editItem(item)"
-      >
-        mdi-pencil
-      </v-icon>
-    </template>
-  </v-data-table>
+          <v-row>
+            <v-spacer></v-spacer>
+            <v-btn
+              v-show="!fabBtn"
+              @click="createItem"
+              color="primary"
+              class="mb-2 mr-5"
+              dark
+            >
+              Novo Cliente
+            </v-btn>
+          </v-row>
+        </v-toolbar>
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <v-icon
+          class="mr-2"
+          @click="editItem(item)"
+        >
+          mdi-pencil
+        </v-icon>
+      </template>
+    </v-data-table>
+    <v-btn
+      fab
+      dark
+      bottom
+      right
+      fixed
+      class="mb-15"
+      color="primary"
+      @click="createItem"
+      v-show="fabBtn"
+    >
+      <v-icon dark>mdi-plus</v-icon>
+    </v-btn>
+  </span>
 </template>
 
 <script>
@@ -38,6 +61,7 @@ export default {
   name: 'ClientList',
 
   data: () => ({
+    fabBtn: false,
     headers: [
       {
         text: 'Nome',
@@ -51,19 +75,31 @@ export default {
       { text: '', value: 'actions', sortable: false },
     ],
     noDataText: 'Você não possui clientes.',
+    loadingText: 'Carregando...',
     items: [],
+    page: 1,
+    limit: 10,
   }),
 
   created() {
     this.getItems();
+    this.setButton();
   },
 
   methods: {
 
+    setButton() {
+      const { xs, sm } = this.$vuetify.breakpoint;
+      this.fabBtn = xs || sm;
+    },
+
     async getItems() {
       try {
         this.loading = true;
-        this.items = await request('/client');
+        this.items = await request('/client', 'GET', {
+          limit: this.limit,
+          page: this.page,
+        });
       } catch (err) {
         this.showError();
       } finally {
@@ -85,10 +121,9 @@ export default {
     },
 
     showError() {
-      eventBus.$emit('show-alert', {
-        message: 'Ocorreu um erro, por favor tente novamente mais tarde.',
+      eventBus.$emit('show-snack', {
+        text: 'Ocorreu um erro, por favor tente novamente mais tarde.',
         color: 'red',
-        icon: 'mdi-error',
       });
     },
   },
