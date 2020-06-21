@@ -6,9 +6,12 @@
       dark
     >
     </v-app-bar>
-
     <v-main>
-      <router-view></router-view>
+      <v-container fluid>
+        <transition name="slide">
+          <router-view></router-view>
+        </transition>
+      </v-container>
     </v-main>
   </v-app>
 </template>

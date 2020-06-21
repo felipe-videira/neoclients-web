@@ -10,4 +10,4 @@ services:
       - /usr/app/web/node_modules
       - ./src:/usr/app/web/src
     environment:
-      - API_HOST=${API_HOST}
+      - VUE_APP_API_HOST=${VUE_APP_API_HOST}
