@@ -11,7 +11,7 @@
             v-model="values.firstName"
             :rules="rules.firstName"
             :label="labels.firstName"
-            :disabled="loading"
+            :disabled="loading || loadingDelete"
             required
             clearable
           ></v-text-field>
@@ -21,7 +21,7 @@
             v-model="values.lastName"
             :rules="rules.lastName"
             :label="labels.lastName"
-            :disabled="loading"
+            :disabled="loading || loadingDelete"
             required
             clearable
           ></v-text-field>
@@ -32,7 +32,7 @@
             v-model="values.cpf"
             :rules="rules.cpf"
             :label="labels.cpf"
-            :disabled="loading"
+            :disabled="loading || loadingDelete"
             required
             clearable
           ></v-text-field>
@@ -42,7 +42,7 @@
             v-model="values.email"
             :rules="rules.email"
             :label="labels.email"
-            :disabled="loading"
+            :disabled="loading || loadingDelete"
             required
             clearable
           ></v-text-field>
@@ -53,7 +53,7 @@
             v-model="values.cellphone"
             :rules="rules.cellphone"
             :label="labels.cellphone"
-            :disabled="loading"
+            :disabled="loading || loadingDelete"
             required
             clearable
           ></v-text-field>
@@ -64,7 +64,7 @@
             v-model="values.telephone"
             :rules="rules.telephone"
             :label="labels.telephone"
-            :disabled="loading"
+            :disabled="loading || loadingDelete"
             clearable
           ></v-text-field>
         </v-col>
@@ -72,10 +72,10 @@
       <v-row class="mt-15">
         <v-col cols="12" md="2">
           <v-btn
-            :disabled="!valid"
             color="success"
             @click="submit"
             :loading="loading"
+            :disabled="!valid || loadingDelete"
             block
           >
             Salvar
@@ -86,6 +86,7 @@
             :class="resetButtonClass"
             color="warning"
             @click="reset"
+            :disabled="loadingDelete"
             block
           >
             Limpar
@@ -94,14 +95,25 @@
         <v-col cols="12" md="2">
           <v-btn
             :class="cancelButtonClass"
-            color="error"
             @click="cancel"
+            :disabled="loadingDelete"
             block
           >
             Cancelar
           </v-btn>
         </v-col>
       </v-row>
+      <v-btn
+        v-show="editing"
+        color="error"
+        :loading="loadingDelete"
+        @click="deleteItem"
+        absolute
+        top
+        right
+      >
+        Excluir
+      </v-btn>
     </v-container>
   </v-form>
 </template>
@@ -121,6 +133,8 @@ export default {
   data: () => ({
     valid: false,
     loading: false,
+    loadingDelete: false,
+    editing: false,
     values: {
       firstName: '',
       lastName: '',
@@ -160,6 +174,8 @@ export default {
 
   created() {
     this.getValues();
+
+    this.editing = !!this.$route.params.id;
   },
 
   computed: {
@@ -228,6 +244,25 @@ export default {
         this.showError();
       } finally {
         this.loading = false;
+      }
+    },
+
+    async deleteItem() {
+      try {
+        this.loadingDelete = true;
+
+        const { id } = this.$route.params;
+        if (!id) return;
+
+        const { message } = await request(`/client/${id}`, 'DELETE');
+
+        this.showSuccess(message);
+
+        this.$router.push({ name: 'ClientList' });
+      } catch (error) {
+        this.showError();
+      } finally {
+        this.loadingDelete = false;
       }
     },
 
